@@ -437,10 +437,13 @@ void addInventory(){
 }
 
 /**
- * Manage the stocks of items in the inventory.
- * The function allows the user to update the stock quantity for a specific product identified by its product ID.
+ * Manage the properties of items in the inventory.
+ * This function allows the user to edit the properties of a product in the inventory, such as name, rate, and stock quantity.
+ * The user is prompted to enter the product ID of the item to be edited.
+ * If the product ID exists, the user can choose which property to edit.
+ * The updated product details are then written back to the "inventory.dat" file.
  */
-void manageStocks() {
+void manageInventory() {
     struct product product;
     char* filePath = strcat(getDataFilesPath(), "\\inventory.dat");
     int ch;
@@ -573,7 +576,7 @@ void showAppFunctions(){
             addInventory();
             break;
         case 3:
-            manageStocks();
+            manageInventory();
             break;
         case 4:
             checkInventory();
