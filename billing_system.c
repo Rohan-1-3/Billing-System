@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <Windows.h>
 #include <windows.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 
 /**
  *This function displays the available application functions.
@@ -160,7 +163,7 @@ void LoadingAnimation(){
  * The function animates the welcome message and then slides up the text.
 */
 void welcomeMessage(){
-    char welcomeString[] = "Welcome to the our Billing System v1.0. \nAll rights reserved. 2023 YourCompany Name. \nUnauthorized duplication or distribution is prohibited. \n\nThank you for choosing our system.";
+    char welcomeString[] = "Welcome to the our Billing System v1.0. \nAll rights reserved. 2023 Rohan Shrestha Billing System. \nUnauthorized duplication or distribution is prohibited. \n\nThank you for choosing our system.";
     int j=0;
     // individual charac print display
     textAnimation(welcomeString);
@@ -332,7 +335,7 @@ void salesBill() {
 
     do {
         while (1) { // accepts product id which exists in file
-            printf("Product ID: ");
+            printf("\nProduct ID: ");
             scanf("%ld", &bill.billItem.productId);
             if (checkProductIdExists(inventory, bill.billItem.productId) == 0) break;
             else {
@@ -440,7 +443,8 @@ void addInventory(){
 void manageStocks() {
     struct product product;
     char* filePath = strcat(getDataFilesPath(), "\\inventory.dat");
-    char ch;
+    int ch;
+    char choice;
     long int productID;
     int newStock;
 
@@ -452,10 +456,10 @@ void manageStocks() {
         exit(-1); // terminate program with error code -1
     }
 
-    textAnimation("\nHere you can manage the stocks of the Items in inventory:\n");
+    textAnimation("\nHere you can manage the edit the properties of the Items in inventory:\n");
 
     while (1) { // accepts only product id which exists in file
-        printf("Product ID: ");
+        printf("\nProduct ID: ");
         scanf("%ld", &productID);
         if (checkProductIdExists(inventory, productID) == 0) break;
         else {
@@ -465,13 +469,42 @@ void manageStocks() {
 
     while (fread(&product, sizeof(product), 1, inventory) == 1) {
         if (product.productId == productID) {
-            printf("Enter the amount of stocks for this product\nCurrent Stock:%d \n-> ", product.inStock);
-            scanf("%d", &newStock);
+             printf("\n%s\t%2f\t%ld\t%d\n", product.name, product.rate, product.productId, product.inStock);
+            do{
+                textAnimation("\nEnter what do you want to edit of this product:\n1)Name\n2)Rate\n3)Stocks\n4)Exit\n->");
+                while(1){// only exits when options from 1 to 4 is entered
+                    ch = getch() - '0';
+                    if (ch >= 1 && ch <= 4) {
+                        break; // Exit the loop if the option is valid
+                    } else {
+                        printf("\nInvalid Option. Please choose a valid option (1 to 4): ");
+                    }
+                }
+                switch(ch){
+                    case 1:
+                        fflush(stdin);
+                        printf("Enter the new name of product: ");
+                        gets(product.name);
+                        break;
+                    case 2:
+                        printf("Enter new rate of product: ");
+                        scanf("%f",&product.rate);
+                        break;
+                    case 3:
+                        printf("Enter the amount of stocks for this product: ");
+                        scanf("%d", &product.inStock);
+                        break;
+                    case 4:
+                        break;
+                }
+                printf("\nDo you want to edit more properties? [y/n] : ");
+                choice = getche();
+            }while(choice == 'y' || choice == 'Y');
 
-            product.inStock = newStock;
             // finding and editing
             fseek(inventory, -sizeof(product), SEEK_CUR);
             fwrite(&product, sizeof(product), 1, inventory);
+            printf("\nProduct Update Successful!");
             break;
         }
     }
@@ -510,7 +543,7 @@ void checkInventory(){
  * Display the exit text
 */
 void exitMessage(){
-    textAnimation("Thank You For Using Our Software.");
+    textAnimation("\nThank You For Using Our Software.");
     getch();
 }
 
@@ -523,7 +556,7 @@ void showAppFunctions(){
     textAnimation("\n\nPlease select one of the following options\n1) Sales Bill\n2) Add Inventory\n3) Manage Stocks\n4) See Inventory\n5) Exit");
     int ch;
 
-    while(1){// only exits when options from 1 to 4 is entered
+    while(1){// only exits when options from 1 to 5 is entered
         ch = getch() - '0';
         if (ch >= 1 && ch <= 5) {
             break; // Exit the loop if the option is valid
